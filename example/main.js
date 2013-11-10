@@ -4,7 +4,7 @@
 var wavesurfer = Object.create(WaveSurfer);
 
 // Init & load audio file
-document.addEventListener('DOMContentLoaded', function () {
+$(document).ready(function() {
     var options = {
         container     : document.querySelector('#waveform'),
         waveColor     : 'violet',
@@ -37,20 +37,53 @@ document.addEventListener('DOMContentLoaded', function () {
     // Init
     wavesurfer.init(options);
     // Load audio from URL
-    wavesurfer.load('example/media/Thick_Business_-_Smoothest_Runes.mp3');
+    wavesurfer.load('example/media/beep2_angels.wav');
 
     // Start listening to drag'n'drop on document
     wavesurfer.bindDragNDrop('#drop');
-});
 
-    // NEW
-    $(".drop-files-container").bind("drop", function(e) {
-    files = e.dataTransfer.files;
+    console.log("heyy up here");
+    // NEW upload stuff via http://stackoverflow.com/questions/14835005/drag-drop-file-upload
+/*    $("#drop").bind("drop", function(e) {
+        console.log("start");
+    files = e.dataTransfer.files[0];
     processFileUpload(files); 
+    console.log("stop");
     // forward the file object to your ajax upload method
     return false;
+    });
+*/
+    console.log("made it");
+
 });
 
+
+//trying to take the function down here...so it's not in document.ready
+function processFileUpload(droppedFiles) {
+         // add your files to the regular upload form
+    var uploadFormData = new FormData($("#upp")[0]); 
+    if(droppedFiles.length > 0) { // checks if any files were dropped
+        for(f = 0; f < droppedFiles.length; f++) { // for-loop for each file dropped
+            uploadFormData.append("files[]",droppedFiles[f]);  // adding every file to the form so you could upload multiple files
+        }
+    }
+
+ // the final ajax call
+
+       $.ajax({
+        url : "upload.php", // use your target
+        type : "POST",
+        data : uploadFormData,
+        cache : false,
+        contentType : false,
+        processData : false,
+        success : function(ret) {
+                 // callback function
+                 console.log(uploadFormData);
+        }
+       });
+
+    };
 
 // Play at once when ready
 // Won't work on iOS until you touch the page

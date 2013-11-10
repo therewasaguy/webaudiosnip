@@ -109,9 +109,10 @@ if (isset($_POST[revers])) {
         <link rel="screenshot" itemprop="screenshot" href="http://katspaugh.github.io/wavesurfer.js/example/screenshot.png" />
 
         <!-- wavesurfer.js        -->
-         <script src="build/wavesurfer_unmin.js"></script>
-
          <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+         <script src="build/wavesurfer_unmin2.js"></script>
+
+
         <!-- Demo -->
         <script src="example/main.js"></script>
         <script src="example/trivia.js"></script>
