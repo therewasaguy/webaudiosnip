@@ -14,14 +14,13 @@ include 'vars.php';
 
     // Make sure form was submitted
     if (isset($_FILES['bytes']))
-    	var_dump($_FILES);
+    	//var_dump($_FILES);
     {
-        ?><script>console.log("bang!")</script><?
         // Check the mime type
         $allowed_types = array_keys($allowed_mime_types);
         $allowed = false;
         if (isset($_FILES['bytes']['type']))
-        	var_dump($_FILES);
+        	//var_dump($_FILES);
         {       
             for ($i = 0; $i < sizeof($allowed_types) && !$allowed; $i++)
             {
@@ -61,13 +60,13 @@ include 'vars.php';
                 else
                 {
                     echo "<p>Error on upload...!  Here is some debugging info:</p>";
-                    var_dump($_FILES);
+                    //var_dump($_FILES);
                 }
             }
             else
             {
                 echo "<p>Type not allowed...! Here is some debugging info:</p>";
-                var_dump($_FILES);
+                //var_dump($_FILES);
             }
         }
 //        else

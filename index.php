@@ -29,10 +29,13 @@ include 'vars.php';
         <link rel="stylesheet" href="css/style.css" />
         <link rel="screenshot" itemprop="screenshot" href="http://katspaugh.github.io/wavesurfer.js/example/screenshot.png" />
 
+
         <!-- wavesurfer.js        -->
          <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
          <script src="js/wavesurfer_unmin2.js"></script>
 
+
+        <script src="css/bootstrap.js"></script>
 
         <!-- Demo -->
         <script src="js/main.js"></script>
@@ -62,12 +65,14 @@ include 'vars.php';
                     <!-- Here be the waveform -->
                 </div>
 
+
                 <div class="controls">
+                    <!--
                     <button class="btn btn-primary" data-action="back">
                         <i class="glyphicon glyphicon-step-backward"></i>
                         Backward
                     </button>
-
+-->
                     <button class="btn btn-primary" data-action="play">
                         <i class="glyphicon glyphicon-play"></i>
                         Play
@@ -77,15 +82,15 @@ include 'vars.php';
                     </button>
 
                     <button class="btn btn-primary" data-action="toggle-loop">
-                        <i class="glyphicon glyphicon-volume-off"></i>
+                        <i class="glyphicon glyphicon-repeat"></i>
                         Loop
                     </button>
-
+<!--
                     <button class="btn btn-primary" data-action="forth">
                         <i class="glyphicon glyphicon-step-forward"></i>
                         Forward
                     </button>
-
+-->
                     <button class="btn btn-primary" data-action="toggle-mute">
                         <i class="glyphicon glyphicon-volume-off"></i>
                         Toggle Mute
@@ -101,21 +106,40 @@ include 'vars.php';
                             <i class="glyphicon glyphicon-flag"></i>
                             Set red mark
                         </button>
+
+                        <button class="btn" data-action="rev">
+                            <i class="glyphicon glyphicon-retweet"></i>
+                            Reverse
+                        </button>
+<!-- dropdown -->
+
+                        <div class="btn-group">
+                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Effects <span class="caret"></span>
+                          </button>
+                          <ul class="dropdown-menu" role="menu">
+                            <li><button class="btn" data-action"reverse">Reverse</button></li>
+                            <li><a href="#">Change Speed</a></li>
+                            <li><a href="#">Reverb</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">EQ</a></li>
+                          </ul>
+                        </div>
                     </div>
                 </div>
+<!-- Single button -->
+
+
 
 
 <!--drag and drop file! -->
-        <!-- <form enctype="multipart/form-data" method="post" id="upload" action="<?php echo htmlentities($_SERVER['PHP_SELF']); ?>"> -->
+
         <div id="upload">
 
                 <p class="lead pull-center" id="drop">
                     Drag'n'drop your favorite
                     <i class="glyphicon glyphicon-music"></i>-file
                     here!
-<!--                <input type="file" name="bytes" /> -->
-<!--                <input type="submit" /> -->
- <!--               <input type="hidden" name="form_submitted" value="true" /> -->
 
                 </p>
         </div>

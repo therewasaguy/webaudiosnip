@@ -50,7 +50,7 @@ $(document).ready(function() {
     // Start listening to drag'n'drop on document
     wavesurfer.bindDragNDrop('#drop');
 
-    console.log("heyy up here");
+    console.log("sup?");
     // NEW upload stuff via http://stackoverflow.com/questions/14835005/drag-drop-file-upload
     //http://api.jquery.com/jQuery.post/
 /*    $("#drop").bind("drop", function(e) {
@@ -62,7 +62,7 @@ $(document).ready(function() {
     return false;
     });
 */
-    console.log("3");
+    console.log("30000");
 
 });
 
@@ -89,7 +89,7 @@ function processFileUpload(droppedFiles) {
  // the final ajax call
     //console.log("now the form data is"+uploadFormData);
       $.ajax({
-        url : "upload.php", // use your target
+        url : escape("upload.php"), // escape to get rid of bogus numbers
         type : "POST",
         data : uploadFormData,
         cache : false,
@@ -97,7 +97,12 @@ function processFileUpload(droppedFiles) {
         processData : false,
         success : function(ret) {
                  // callback function
-                 console.log(ret);
+                 //console.log(ret);
+                 //var filePath = "example/media/";
+                 //currentFile = filePath.concat(ret);
+                 currentFile = $.trim(ret);     //remove white space!
+                 console.log("the current file is " + currentFile)
+                 wavesurfer.load(currentFile)
                  //wavesurfer load that file
                  //set the current file
         }
@@ -156,6 +161,40 @@ wavesurfer.on('ready', function () {
             console.log(wavesurfer.isLooping)
             console.log("loop?");
             //
+        },
+
+        'rev': function() {
+            console.log("reverse");
+
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("revers", true);
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("reverse.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         //console.log(ret);
+                         currentFile = $.trim(ret);
+                         console.log(currentFile);
+                         wavesurfer.load(currentFile);
+//                         wavesurfer.load('example/media/'+currentFile);
+                         //wavesurfer load that file
+                         //set the current file
+                }
+               });
+
+            // 2. get the current file back from PHP and wavesurfer.load it
+
+
         }
     };
 
