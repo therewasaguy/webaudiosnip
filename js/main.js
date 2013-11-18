@@ -3,6 +3,12 @@
 // Create an instance
 var wavesurfer = Object.create(WaveSurfer);
 
+//adding global variables
+var currentFile;
+var timeMs;
+var markerR;
+var markerG;
+
 // Init & load audio file
 $(document).ready(function() {
     var options = {
@@ -37,13 +43,16 @@ $(document).ready(function() {
     // Init
     wavesurfer.init(options);
     // Load audio from URL
-    wavesurfer.load('example/media/beep2_angels.wav');
+    //var currentTrack = 
+    //wavesurfer.load('example/media/beep2_angels.wav');
+    //<?php echo(json_encode($myVariable)); ?>;
 
     // Start listening to drag'n'drop on document
     wavesurfer.bindDragNDrop('#drop');
 
     console.log("heyy up here");
     // NEW upload stuff via http://stackoverflow.com/questions/14835005/drag-drop-file-upload
+    //http://api.jquery.com/jQuery.post/
 /*    $("#drop").bind("drop", function(e) {
         console.log("start");
     files = e.dataTransfer.files[0];
@@ -53,7 +62,7 @@ $(document).ready(function() {
     return false;
     });
 */
-    console.log("made it");
+    console.log("3");
 
 });
 
@@ -61,16 +70,25 @@ $(document).ready(function() {
 //trying to take the function down here...so it's not in document.ready
 function processFileUpload(droppedFiles) {
          // add your files to the regular upload form
-    var uploadFormData = new FormData($("#upp")[0]); 
-    if(droppedFiles.length > 0) { // checks if any files were dropped
-        for(f = 0; f < droppedFiles.length; f++) { // for-loop for each file dropped
-            uploadFormData.append("files[]",droppedFiles[f]);  // adding every file to the form so you could upload multiple files
-        }
-    }
+    var uploadFormData = new FormData();
+    //console.log(droppedFiles);
+    uploadFormData.append("bytes", droppedFiles);
+    uploadFormData.append("form_submitted",true);
+    //console.log(droppedFiles.length); 
+//    if(droppedFiles.length > 0) { // checks if any files were dropped
+//        for(f = 0; f < droppedFiles.length; f++) { // for-loop for each file dropped
+//            uploadFormData.append("bytes",droppedFiles[f]);   // adding every file to the form so you could upload multiple files
+ //           uploadFormData.append("form_submitted",true);  //let's try this?
+            //console.log(uploadFormData);
+ //       }
+//        uploadFormData.append()
+    //}
+        //console.log(uploadFormData);
+    
 
  // the final ajax call
-
-       $.ajax({
+    //console.log("now the form data is"+uploadFormData);
+      $.ajax({
         url : "upload.php", // use your target
         type : "POST",
         data : uploadFormData,
@@ -79,11 +97,21 @@ function processFileUpload(droppedFiles) {
         processData : false,
         success : function(ret) {
                  // callback function
-                 console.log(uploadFormData);
+                 console.log(ret);
+                 //wavesurfer load that file
+                 //set the current file
         }
        });
 
     };
+
+
+    //simulate a click when drop is selected ?
+    $('#drop a').click(function(){
+        // Simulate a click on the file input button
+        // to show the file browser dialog
+        $(this).parent().find('input').click();
+    });
 
 // Play at once when ready
 // Won't work on iOS until you touch the page
@@ -122,9 +150,16 @@ wavesurfer.on('ready', function () {
 
         'toggle-mute': function () {
             wavesurfer.toggleMute();
+        },
+
+        'toggle-loop': function () {
+            console.log(wavesurfer.isLooping)
+            console.log("loop?");
+            //
         }
     };
 
+    //map keys!
     document.addEventListener('keydown', function (e) {
         var map = {
             32: 'play',       // space

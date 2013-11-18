@@ -16,7 +16,9 @@ var WaveSurfer = {
         normalize: !1,
         audioContext: null,
         container: null,
+        looping: 1,
         renderer: "Canvas"
+        //position: 0;
     },
     init: function (t) {
         this.params = WaveSurfer.util.extend({}, this.defaultParams, t), this.markers = {}, this.once("marked", this.bindMarks.bind(this)), this.savedVolume = 0, this.isMuted = !1, this.createBackend(), this.createDrawer()
@@ -33,11 +35,14 @@ var WaveSurfer = {
     },
     createBackend: function () {
         var t = this;
-        this.backend = Object.create(WaveSurfer.WebAudio), this.backend.on("play", function () {
-            t.fireEvent("play")
-        }), this.on("play", function () {
-            t.restartAnimationLoop()
-        }), this.backend.init(this.params)
+        this.backend = Object.create(WaveSurfer.WebAudio), 
+        this.backend.on("play", function () {
+                            t.fireEvent("play")
+                        }), 
+        this.on("play", function () {
+                            t.restartAnimationLoop()
+                        }), 
+        this.backend.init(this.params)
     },
     restartAnimationLoop: function () {
         var t = this,
@@ -59,6 +64,9 @@ var WaveSurfer = {
     playPause: function () {
         this.backend.isPaused() ? this.play() : this.pause()
     },
+   isLooping: function () {
+       return(this.backend.loop())
+   },
     skipBackward: function (t) {
         this.skip(t || -this.params.skipLength)
     },
@@ -92,12 +100,20 @@ var WaveSurfer = {
                 width: this.params.markerWidth
             }, t),
             r = Object.create(WaveSurfer.Mark);
+                   // console.log(i.position); --> this shows the real time!
+
         return r.on("update", function () {
             var t = e.backend.getDuration() || 1;
             null == r.position && (r.position = r.percentage * t), r.percentage = r.position / t, e.markers[r.id] = r, e.drawer.addMark(r)
         }), r.on("remove", function () {
             e.drawer.removeMark(r), delete e.markers[r.id]
         }), this.fireEvent("marked", r), r.init(i)
+
+//        console.log(t);
+        console.log("position = ");
+        console.log(position);
+
+
     },
     redrawMarks: function () {
         Object.keys(this.markers).forEach(function (t) {
@@ -159,7 +175,7 @@ var WaveSurfer = {
         t.addEventListener("drop", function (s) {
             s.stopPropagation(), s.preventDefault(), t.classList.remove(r);
             var a = s.dataTransfer.files[0];
-            console.log("bang");
+            //console.log(a);
             processFileUpload(a);
             a ? (e.empty(), i.readAsArrayBuffer(a)) : e.fireEvent("error", "Not a file")
         }), t.addEventListener("dragover", function (e) {
@@ -309,6 +325,7 @@ WaveSurfer.Mark = {
         return this.paused
     },
     getDuration: function () {
+        //console.log(this.buffer.duration),
         return this.buffer ? this.buffer.duration : 0
     },
     play: function (t, e) {
@@ -316,6 +333,9 @@ WaveSurfer.Mark = {
     },
     pause: function () {
         this.lastPause = this.lastStart + (this.ac.currentTime - this.startTime), this.paused = !0, this.source && (this.source.stop ? this.source.stop(0) : this.source.noteOff(0), this.clearSource()), this.fireEvent("pause")
+    },
+    isLooping: function() {
+        looping - "hey loop sux"
     },
     getPeaks: function (t, e) {
         var i = this.buffer,
@@ -338,6 +358,8 @@ WaveSurfer.Mark = {
     getCurrentTime: function () {
         return this.isPaused() ? this.lastPause : this.lastStart + (this.ac.currentTime - this.startTime)
     },
+
+    // ***************************Creates the Audio Context
     audioContext: null,
     getAudioContext: function () {
         return WaveSurfer.WebAudio.audioContext || (WaveSurfer.WebAudio.audioContext = new(window.AudioContext || window.webkitAudioContext)), WaveSurfer.WebAudio.audioContext
@@ -476,7 +498,20 @@ WaveSurfer.Mark = {
     },
     updateProgress: function (t) {
         var e = Math.round(this.width * t) / this.pixelRatio;
-        this.progressWave.style.width = e + "px"
+        this.progressWave.style.width = e + "px",
+        console.log(t);
+        //        console.log(this.backend.getCurrentTime());   WHY DONT THIS WORK?
+        console.log("update progress");
+        //put this into a separate function
+        //send to a separate PHP page that parses and then returns
+        var params = {cursor: t};
+
+        $.post("test.php", params).done(function( returnedData ) {
+            console.log(returnedData.cursor);
+            //console.log(returnedData.ms);
+            console.log(returnedData);
+        }, "json");
+        //ajax ?
     },
     addMark: function (t) {
         var e = t.id in this.marks;
