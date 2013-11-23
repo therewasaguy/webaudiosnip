@@ -51,6 +51,13 @@ include 'vars.php';
                                         
                     // Tell the user
                     $current_file = $uploadfilename;
+
+                    /** add this to a new undolistarray...but let's do it in JS instead!
+                    unset($undoList);
+                    $undoList = array($uploadrelativefile);
+                    $undoIndex = 0;
+                    **/
+
                     $files_list = scandir($dir);
  // disabling in upload.php but would enable otherwise /////// $files_list = resetFiles($files_list);                  
                     echo $uploadrelativefile;
@@ -75,6 +82,8 @@ include 'vars.php';
  //           var_dump($_FILES);
  //       }
     }
+
+
 ?>
 
 

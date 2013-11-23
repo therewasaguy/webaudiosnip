@@ -28,18 +28,26 @@ include 'vars.php';
 <!--        <link rel="stylesheet" href="http://simonwhitaker.github.com/github-fork-ribbon-css/gh-fork-ribbon.css" /> -->
         <link rel="stylesheet" href="css/style.css" />
         <link rel="screenshot" itemprop="screenshot" href="http://katspaugh.github.io/wavesurfer.js/example/screenshot.png" />
+        <link rel="stylesheet" href="css/slider.css" />
+        <link rel="stylesheet" href="css/overwritten.css" />
 
+
+         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
         <!-- wavesurfer.js        -->
-         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
          <script src="js/wavesurfer_unmin2.js"></script>
-
-
+         <!--boostrap-->
         <script src="css/bootstrap.js"></script>
-
-        <!-- Demo -->
+        <script src="js/bootstrap-slider.js"></script>
+        <!-- DAT GUI -->
+        <script src="js/dat.gui.js"></script>
+        <!-- Main JS Stuff -->
         <script src="js/main.js"></script>
-<!--        <script src="example/trivia.js"></script> -->
+
+        <!--get audio contexts from wavesurfer
+         <script src="js/audiocont.js"></script>
+        -->
+        <script src="js/trivia.js"></script>
     </head>
 
     <body itemscope itemtype="http://schema.org/WebApplication">
@@ -47,9 +55,11 @@ include 'vars.php';
             <div class="header">
                 <noindex>
                 <ul class="nav nav-pills pull-right">
+<!-- no worky
                     <li><a href="?fill">Fill</a></li>
                     <li><a href="?scroll">Scroll</a></li>
                     <li><a href="?normalize">Normalize</a></li>
+-->
                 </ul>
                 </noindex>
 
@@ -90,47 +100,141 @@ include 'vars.php';
                         <i class="glyphicon glyphicon-step-forward"></i>
                         Forward
                     </button>
--->
+
                     <button class="btn btn-primary" data-action="toggle-mute">
                         <i class="glyphicon glyphicon-volume-off"></i>
                         Toggle Mute
                     </button>
-
+-->
                     <div class="mark-controls">
                         <button class="btn btn-success" data-action="green-mark">
                             <i class="glyphicon glyphicon-flag"></i>
-                            Set green mark
+                            Set mark
                         </button>
 
                         <button class="btn btn-danger" data-action="red-mark">
                             <i class="glyphicon glyphicon-flag"></i>
-                            Set red mark
+                            Set mark
                         </button>
 
                         <button class="btn" data-action="rev">
                             <i class="glyphicon glyphicon-retweet"></i>
                             Reverse
                         </button>
-<!-- dropdown -->
+
+                        <button class="btn" data-action="speedUp">
+                            <i class="glyphicon glyphicon-arrow-up"></i>
+                            Speed Up
+                        </button>
+
+                        <button class="btn" data-action="speedDn">
+                            <i class="glyphicon glyphicon-arrow-down"></i>
+                            Slow Down
+                        </button>
+
+                        <button class="btn" data-action="reverb">
+                            <i class="glyphicon glyphicon-tint"></i>
+                            Reverb
+                        </button>
+
+                        <button class="btn" onclick="undo()">
+                            <i class="glyphicon glyphicon-thumbs-down"></i>
+                            Undo
+                        </button>
+
+                        <button class="btn" onclick="redo()">
+                            <i class="glyphicon glyphicon-thumbs-up"></i>
+                            Redo
+                        </button>
+
+<!-- Button trigger modal -->
+                        <button class="btn" data-toggle="modal" data-target="#speedModal">
+                            <i class="glyphicon glyphicon-resize-vertical"></i>
+                          Change Speed
+                        </button>
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="speedModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h4 class="modal-title" id="myModalLabel">Change Speed</h4>
+                              </div>
+                              <div class="modal-body">
+<!--SLIDER: http://www.eyecon.ro/bootstrap-slider/ -->
+            <script>$('.RC').slider()</script>
+            <style>  #RC .slider-selection {
+                                background: #FF8282;
+                              }
+                              #sl3 .slider-selection {
+                                background: red;
+                                }
+                    #sl3 .slider .slider-horizontal {
+                        width:300px;
+
+                    }
+
+  </style>
+               <div class="well">
+                <input type="text" value=".01" id="sl3" >
+              </div>
+
+                            </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
+                                <button type="button" class="btn btn-primary" id="speedGoButton">Go!</button>
+                                <script>
+                                // console.log("NOT A TEST")
+                                // $("#speedGoButton").click(setSpeed());
+                                $("#speedGoButton").click(
+                                    function(){
+                                        setSpeed();
+                                    }
+                                )
+                                </script>
+                              </div>
+                            </div><!-- /.modal-content -->
+                          </div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+<!-- dropdown no worky-->
 
                         <div class="btn-group">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                             Effects <span class="caret"></span>
                           </button>
                           <ul class="dropdown-menu" role="menu">
-                            <li><button class="btn" data-action"reverse">Reverse</button></li>
-                            <li><a href="#">Change Speed</a></li>
+                            <li onclick="console.log('hey')"><a href="#">Change Speed</a></li>
+                            <li><button class="btn" data-action"rev">Reverse</button></li>
                             <li><a href="#">Reverb</a></li>
                             <li class="divider"></li>
                             <li><a href="#">EQ</a></li>
                           </ul>
                         </div>
+<!--                    -->
                     </div>
                 </div>
 <!-- Single button -->
 
 
 
+
+
+            <div class="row marketing">
+                <div class="col-lg-6">
+                    <!--visualizations??-->
+                    <canvas id="viz" style="background-color:#000;">
+                    </canvas>
+                    <script>
+//                    console.log(WaveSurfer.getCurrentTime())
+/*                      var canvas = document.querySelector('canvas');
+                      var drawContext = canvas.getContext('2d');
+                      canvas.width = 640;
+                      canvas.height = 360;
+*/
+                    </script>
+                </div>
+            </div>
 
 <!--drag and drop file! -->
 
@@ -146,20 +250,16 @@ include 'vars.php';
 
 
 
-
-            <div class="row marketing">
-                <div class="col-lg-6">
-                    <script>
-//                    console.log(WaveSurfer.getCurrentTime())
-                    </script>
-                    <!--visualizations??-->
-                </div>
-            </div>
-
             <hr />
 
             <div class="row">
-                <div class="col-lg-12">
+                <div class="downRow">
+                        <a href="#">
+                        <button class="btn" onClick="downloadFile()" align="center" style="margin:auto;">
+                            <i class="glyphicon glyphicon-download-alt"></i>
+                            Download File
+                        </button>
+                        </a<
                 </div>
             </div>
 
@@ -189,5 +289,46 @@ include 'vars.php';
             </div>
         </div>
     -->
+
+<script src="js/visualizer-sample.js"></script>
+
+<script>
+        $(function(){
+
+        $('#sl1').slider({
+          formater: function(value) {
+            return 'Current value: '+value;
+          }
+        });
+        $('#sl2').slider();
+
+        var RGBChange = function() {
+          $('#RGB').css('background', 'rgb('+r.getValue()+','+g.getValue()+','+b.getValue()+')')
+        };
+
+        var r = $('#R').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+        var g = $('#G').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+        var b = $('#B').slider()
+                .on('slide', RGBChange)
+                .data('slider');
+
+        $('#sl3').slider({
+            min: .05,
+            max: 200,
+            step: .1,
+            formater: function(value) {
+            return 'Current value: '+value;
+            }
+        });
+
+        $('#eg input').slider();
+    });
+  </script>
+
+
     </body>
 </html>

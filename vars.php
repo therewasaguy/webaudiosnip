@@ -37,7 +37,7 @@ function resetFiles($flist) {
 $files_list = resetFiles($files_list);
 
 //global variables that should be set every time page refreshes
-$current_file; //= $files_list[0];
+$current_file; // = 'example/media/Thick_Business_-_Smoothest_Runes.wav'; //= $files_list[0];
 $temp_file; // = null;
 $old_file; // = null;
 $orig_file_name; // = null;

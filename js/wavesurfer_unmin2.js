@@ -1,7 +1,12 @@
+
+
 "use strict";
+
+
+
 var WaveSurfer = {
     defaultParams: {
-        height: 128,
+        height: 256,
         waveColor: "#999",
         progressColor: "#555",
         cursorColor: "#333",
@@ -65,7 +70,8 @@ var WaveSurfer = {
         this.backend.isPaused() ? this.play() : this.pause()
     },
    isLooping: function () {
-       return(this.backend.loop())
+       console.log(this.backend.isLooping());
+       //console.log("hey");
    },
     skipBackward: function (t) {
         this.skip(t || -this.params.skipLength)
@@ -335,7 +341,17 @@ WaveSurfer.Mark = {
         this.lastPause = this.lastStart + (this.ac.currentTime - this.startTime), this.paused = !0, this.source && (this.source.stop ? this.source.stop(0) : this.source.noteOff(0), this.clearSource()), this.fireEvent("pause")
     },
     isLooping: function() {
-        looping - "hey loop sux"
+//        looping = "hey loop sux",
+        if (this.source.loop = true)
+            {
+            this.source.loop = false;
+            console.log("false");
+            }
+        else
+            {
+            this.source.loop = true;
+            console.log("troo");
+            }
     },
     getPeaks: function (t, e) {
         var i = this.buffer,
@@ -364,6 +380,7 @@ WaveSurfer.Mark = {
     getAudioContext: function () {
         return WaveSurfer.WebAudio.audioContext || (WaveSurfer.WebAudio.audioContext = new(window.AudioContext || window.webkitAudioContext)), WaveSurfer.WebAudio.audioContext
     },
+//try this    globalAudioContext = this.getAudioContext(),
     offlineAudioContext: null,
     getOfflineAudioContext: function (t) {
         return WaveSurfer.WebAudio.offlineAudioContext || (WaveSurfer.WebAudio.offlineAudioContext = new(window.OfflineAudioContext || window.webkitOfflineAudioContext)(1, 2, t)), WaveSurfer.WebAudio.offlineAudioContext
@@ -452,11 +469,13 @@ WaveSurfer.Mark = {
     createElements: function () {
         this.marks = {};
         var t = this.wrapper.appendChild(document.createElement("canvas"));
+        t.setAttribute("id", "canvas1");
         this.style(t, {
             position: "absolute",
             zIndex: 1
         });
         var e = this.wrapper.appendChild(document.createElement("wave"));
+        e.setAttribute("id", "wave1");
         this.style(e, {
             position: "absolute",
             zIndex: 2,
@@ -466,9 +485,10 @@ WaveSurfer.Mark = {
         });
         var i = e.appendChild(document.createElement("canvas")),
             r = this.wrapper.appendChild(document.createElement("canvas"));
+            r.setAttribute("id", "canvas2");
         this.style(r, {
             position: "absolute",
-            zIndex: 3
+            zIndex: 3,
         }), this.canvases = [t, i, r], this.waveCc = t.getContext("2d"), this.progressCc = i.getContext("2d"), this.progressWave = e, this.marksCc = r.getContext("2d")
     },
     updateWidth: function () {
@@ -531,4 +551,5 @@ WaveSurfer.Mark = {
         }, this)
     }
 });
+
 //# sourceMappingURL=/build/wavesurfer-js-map.json

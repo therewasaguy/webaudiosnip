@@ -9,6 +9,15 @@ var timeMs;
 var markerR;
 var markerG;
 
+//adding more for analysis
+var context;
+var freqDomain;
+var analyser;
+
+//undo variables
+var undoList = new Array();
+var undoIndex = null;
+
 // Init & load audio file
 $(document).ready(function() {
     var options = {
@@ -44,11 +53,38 @@ $(document).ready(function() {
     wavesurfer.init(options);
     // Load audio from URL
     //var currentTrack = 
-    //wavesurfer.load('example/media/beep2_angels.wav');
+    currentFile = 'example/media/beep2_angels.wav';
+    undoIndex = 0;
+    undoList[undoIndex] = currentFile;
+    console.log("the current file is " + undoList)
+    wavesurfer.load(currentFile);
     //<?php echo(json_encode($myVariable)); ?>;
 
     // Start listening to drag'n'drop on document
     wavesurfer.bindDragNDrop('#drop');
+
+/********************    //frequency analysis stuff   *************/
+
+    //audio context variable
+    context = wavesurfer.backend.ac;
+
+    var lowpass = wavesurfer.backend.ac.createBiquadFilter();
+    wavesurfer.backend.setFilter(lowpass);
+
+    //set up the analyzer
+    analyser = wavesurfer.backend.ac.createAnalyser();
+    console.log(wavesurfer.backend);
+    wavesurfer.backend.gainNode.connect(analyser);
+    analyser.connect(wavesurfer.backend.ac.destination);
+    //get frequency domain
+    freqDomain = new Float32Array(analyser.frequencyBinCount);
+    analyser.getFloatFrequencyData(freqDomain);
+
+
+
+
+
+/////////////////////////////////////////////////////////////////
 
     console.log("sup?");
     // NEW upload stuff via http://stackoverflow.com/questions/14835005/drag-drop-file-upload
@@ -62,9 +98,94 @@ $(document).ready(function() {
     return false;
     });
 */
+
+//GUI better to put this in the same place as the other onloads
+  var text = new myEffect();
+  var gui = new dat.GUI();
+  gui.add(text, 'changePitch', -5, 5).onChange(changePitch);
+  gui.add(text, 'speed', -5, 5);
+  gui.add(text, 'typeOfSpeed', [ 'pizza', 'chrome', 'hooray' ] );
+
+
     console.log("30000");
 
+
 });
+
+function setSpeed(){
+    //see if this works
+    console.log("setSpeed");
+    var spd = $('#sl3').data('slider').getValue();
+    console.log(spd);
+}
+
+function changePitch() {
+  console.log(changePitch)
+  }
+
+function downloadFile() {
+    console.log("download "+ currentFile);
+    window.open(currentFile, '_blank');
+}
+
+////////frequency stuff ///////
+
+
+    function getFrequencyValue(frequency) {
+      var nyquist = context.sampleRate/2;
+      var index = Math.round(frequency/nyquist * freqDomain.length);
+      return freqDomain[index];
+    }
+
+    function draw() {
+
+      var canvas = document.getElementById('viz');
+      var drawContext = canvas.getContext('2d');
+      var WIDTH = 850;
+      var HEIGHT = 100;
+      canvas.width = WIDTH;
+      canvas.height = HEIGHT;
+      drawContext.font = "bold 12px sans-serif";
+      drawContext.strokeStyle = "#fff";
+      drawContext.fillStyle = "#fff";
+      drawContext.textAlign = "center";
+      drawContext.font = "12px sans-serif";
+      drawContext.fillText("FREQUENCY", WIDTH/2, 14);
+      drawContext.textAlign = "left";
+      drawContext.fillText("20 Hz", 0, 14);
+      drawContext.textAlign = "right";
+      drawContext.fillText("20,000 Hz", WIDTH, 14);
+
+
+        var freqDomain = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteFrequencyData(freqDomain);
+        for (var i = 0; i < analyser.frequencyBinCount; i++) {
+          var value = freqDomain[i];
+          var percent = value / 256;
+          var height = HEIGHT * percent;
+          var offset = HEIGHT - height - 1;
+          var barWidth = WIDTH/analyser.frequencyBinCount;
+          var hue = i/analyser.frequencyBinCount * 360;
+          drawContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+          drawContext.fillRect(i * barWidth, offset, barWidth, height);
+        }
+        
+        var timeDomain = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteTimeDomainData(freqDomain);
+        for (var i = 0; i < analyser.frequencyBinCount; i++) {
+          var value = timeDomain[i];
+          var percent = value / 256;
+          var height = HEIGHT * percent;
+          var offset = HEIGHT - height - 1;
+          var barWidth = WIDTH/analyser.frequencyBinCount;
+          drawContext.fillStyle = 'black';
+          drawContext.fillRect(i * barWidth, offset, 1, 1);
+        }
+
+    }
+
+    setInterval(draw,1000/30); // 30 x per second
+
 
 
 //trying to take the function down here...so it's not in document.ready
@@ -101,7 +222,9 @@ function processFileUpload(droppedFiles) {
                  //var filePath = "example/media/";
                  //currentFile = filePath.concat(ret);
                  currentFile = $.trim(ret);     //remove white space!
-                 console.log("the current file is " + currentFile)
+                 undoIndex = 0;
+                 undoList[undoIndex] = currentFile;
+                 console.log("the current file is " + undoList)
                  wavesurfer.load(currentFile)
                  //wavesurfer load that file
                  //set the current file
@@ -124,11 +247,64 @@ wavesurfer.on('ready', function () {
     //wavesurfer.play();
 });
 
+
+///////////////********** UNDO / REDO ***********/
+
+function fileChange() {
+  undoIndex = undoIndex+1;
+  undoList[undoIndex] = currentFile;
+  console.log("undo index is: " + undoIndex +" undoList is "+ undoList);
+  wavesurfer.load(currentFile);
+}
+
+function undo() {
+  console.log("undo");
+  if (undoIndex > 0) {
+    undoIndex = undoIndex - 1;
+    currentFile = undoList[undoIndex];
+    console.log("undo index is: " + undoIndex +" undoList spot is "+ undoList[undoIndex]);
+    wavesurfer.load(currentFile);
+  }
+  else {
+    alert("No More To Undo!");
+  }
+};
+
+function redo() {
+  console.log("redo");
+  if (undoIndex < undoList.length - 1) {
+    undoIndex = undoIndex + 1;
+    currentFile = undoList[undoIndex];
+    console.log("undo index is: " + undoIndex +" undoList spot is "+ undoList[undoIndex]);
+    wavesurfer.load(currentFile);
+  } else {
+    alert("No More To Redo!");
+  }
+};
+
+
+
+
+
+//dat.gui button stuff
+//
+var myEffect = function() {
+  this.speed = 0.8;
+  this.changePitch = false;
+  this.typeOfSpeed = 'pizza';
+
+  // Define render logic ...
+};
+
+
 // Bind buttons and keypresses
 (function () {
     var eventHandlers = {
         'play': function () {
             wavesurfer.playPause();
+            //get FFT
+            console.log(getFrequencyValue(1000));
+
         },
 
         'green-mark': function () {
@@ -158,14 +334,12 @@ wavesurfer.on('ready', function () {
         },
 
         'toggle-loop': function () {
-            console.log(wavesurfer.isLooping)
+            wavesurfer.isLooping();
             console.log("loop?");
             //
         },
 
-        'rev': function() {
-            console.log("reverse");
-
+        'rev': function() {  //REVERSE
             //0. prepare the infos
             var uploadFormData = new FormData();
             //console.log(droppedFiles);
@@ -180,19 +354,89 @@ wavesurfer.on('ready', function () {
                 cache : false,
                 contentType : false,
                 processData : false,
+                success : function(ret) { // callback function
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+               })
+          },
+
+
+        'reverb': function() {
+            console.log("Reverb");
+
+            var uploadFormData = new FormData();
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("reverb", true);
+
+              $.ajax({
+                url : escape("reverb.php"),
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+               })
+          },
+
+        'speedUp': function() {
+            console.log("speedUp");
+
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("speed", true);
+            uploadFormData.append("amount", 1.5);
+
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("speed.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
                 success : function(ret) {
                          // callback function
                          //console.log(ret);
                          currentFile = $.trim(ret);
-                         console.log(currentFile);
-                         wavesurfer.load(currentFile);
-//                         wavesurfer.load('example/media/'+currentFile);
-                         //wavesurfer load that file
-                         //set the current file
+                         fileChange();
+                }
+               })
+          },
+            
+            'speedDn': function() {
+            console.log("slowDn");
+
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("speed", true);
+            uploadFormData.append("amount", .7);
+
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("speed.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         //console.log(ret);
+                         currentFile = $.trim(ret);
+                         fileChange();
                 }
                });
-
-            // 2. get the current file back from PHP and wavesurfer.load it
 
 
         }
@@ -206,6 +450,7 @@ wavesurfer.on('ready', function () {
             40: 'red-mark',   // down
             37: 'back',       // left
             39: 'forth'       // right
+
         };
         if (e.keyCode in map) {
             var handler = eventHandlers[map[e.keyCode]];

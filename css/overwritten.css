@@ -1,0 +1,22 @@
+button {
+/*	color: orange;*/
+}
+
+element {
+	width:inherit;
+}
+.slider.slider-horizontal {
+  width: 210px !important;
+ }
+
+ .modal-body {
+  position: relative;
+  width:600px;
+  padding: 20px;
+}
+
+ .downRow {
+  position: relative;
+  width:100px;
+  margin:auto !important;
+}
