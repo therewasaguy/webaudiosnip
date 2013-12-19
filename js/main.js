@@ -12,6 +12,7 @@ var markerG;
 //adding more for analysis
 var context;
 var freqDomain;
+//var times;
 var analyser; //current analyser (we need to toggle between live (analyserR) and playback (analyserP) )
 var analyserP; //analyser specific to the wavesurfer
 
@@ -79,6 +80,123 @@ $(document).ready(function() {
     // Start listening to drag'n'drop on document
     wavesurfer.bindDragNDrop('#drop');
 
+//bind dropdown elements by ID to their functions
+jQuery("#reverse").click(function(e){
+  console.log("reverse!");
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("revers", true);
+            greyButtons();
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("reverse.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) { // callback function
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+               })
+                 e.preventDefault();
+});
+
+jQuery("#reverb").click(function(e){
+            console.log("Reverb");
+
+            var uploadFormData = new FormData();
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("reverb", true);
+            greyButtons();
+
+              $.ajax({
+                url : escape("reverb.php"),
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+               })
+});
+
+jQuery("#speedup").click(function(e){
+            console.log("speedUp");
+            greyButtons();
+
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("speed", true);
+            uploadFormData.append("amount", 1.5);
+
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("speed.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         //console.log(ret);
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+               })
+});
+
+jQuery("#slowdown").click(function(e){
+            console.log("slowDn");
+            greyButtons();
+
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            uploadFormData.append("tempFile", currentFile);
+            uploadFormData.append("speed", true);
+            uploadFormData.append("amount", .7);
+
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("speed.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         //console.log(ret);
+                         currentFile = $.trim(ret);
+                         fileChange();
+                }
+  })
+});
+
+jQuery("#undo").click(function(e){
+            console.log("undo");
+
+      undo();
+  });
+
+jQuery("#redo").click(function(e){
+            console.log("redo");
+
+      redo();
+  });
+
 /********************    //frequency analysis stuff   *************/
 
     //audio context variable
@@ -93,9 +211,21 @@ $(document).ready(function() {
     analyser = analyserP;
     wavesurfer.backend.gainNode.connect(analyser);
     analyser.connect(wavesurfer.backend.ac.destination);
+
+// Interesting parameters to tweak!
+  var SMOOTHING = 0.76;
+  var FFT_SIZE = 2048;
+  analyser.smoothingTimeConstant = SMOOTHING;
+  analyser.fftSize = FFT_SIZE;
+  analyser.minDecibels = -140;
+  analyser.maxDecibels = 0;
     //get frequency domain
     freqDomain = new Float32Array(analyser.frequencyBinCount);
     analyser.getFloatFrequencyData(freqDomain);
+
+    //timeDomain = new Float32Array(analyser.frequencyBinCount);
+    //times = new Uint8Array(analyser.frequencyBinCount);
+    //analyser.getByteTimeDomainData(times);
 
 
 
@@ -104,7 +234,14 @@ $(document).ready(function() {
 /////////////////////////////////////////////////////////////////
 
 
+
+//bootstrap
+
+$('.dropdown-toggle').dropdown();
+
     console.log("30000");
+
+
 
 
 });
@@ -140,20 +277,20 @@ function downloadFile() {
 
       var canvas = document.getElementById('viz');
       var drawContext = canvas.getContext('2d');
-      var WIDTH = 850;
-      var HEIGHT = 100;
+      var WIDTH = canvas.width;
+      var HEIGHT = canvas.height;
       canvas.width = WIDTH;
       canvas.height = HEIGHT;
       drawContext.font = "bold 12px sans-serif";
       drawContext.strokeStyle = "#fff";
       drawContext.fillStyle = "#fff";
       drawContext.textAlign = "center";
-      drawContext.font = "12px sans-serif";
+      drawContext.font = "12px courier";
       drawContext.fillText("FREQUENCY", WIDTH/2, 14);
       drawContext.textAlign = "left";
       drawContext.fillText("20 Hz", 0, 14);
       drawContext.textAlign = "right";
-      drawContext.fillText("20,000 Hz", WIDTH, 14);
+      drawContext.fillText("22,050 Hz", WIDTH, 14);
       canvas.addEventListener("mousedown", mouseDownListener, false);
 
 
@@ -163,6 +300,8 @@ function downloadFile() {
       } else {
         analyser = analyserP;
       }
+
+
 
         var freqDomain = new Uint8Array(analyser.frequencyBinCount);
         analyser.getByteFrequencyData(freqDomain);
@@ -177,17 +316,32 @@ function downloadFile() {
           drawContext.fillRect(i * barWidth, offset, barWidth, height);
         }
         
-        var timeDomain = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteTimeDomainData(freqDomain);
-        for (var i = 0; i < analyser.frequencyBinCount; i++) {
-          var value = timeDomain[i];
-          var percent = value / 256;
-          var height = HEIGHT * percent;
-          var offset = HEIGHT - height - 1;
-          var barWidth = WIDTH/analyser.frequencyBinCount;
-          drawContext.fillStyle = 'black';
-          drawContext.fillRect(i * barWidth, offset, 1, 1);
+      var wCanvas = document.getElementById('wViz');
+      var wContext = wCanvas.getContext('2d');
+      var wWIDTH = wCanvas.width;
+      var wHEIGHT = wCanvas.height;
+      wContext.fillStyle = '#777';
+      wContext.fillRect(0,0,wWIDTH,wHEIGHT);
+      wContext.strokeStyle = "#fff";
+      wContext.fillStyle = "#fff";
+      wContext.textAlign = "center";
+      wContext.font = "12px courier";
+      wContext.fillText("WAVEFORM", wWIDTH/2, 14);
+
+//console.log(analyser.frequencyBinCount); = 1024
+        var times = new Uint8Array(1024);
+        analyser.getByteTimeDomainData(times);
+        for (var ii = 0; ii < 1024; ii++) {
+          var ivalue = times[ii];
+          var ipercent = ivalue / 256;
+          var hii = wHEIGHT * ipercent;
+          var offset = wHEIGHT - hii - 1;
+          var barWidth = wWIDTH/1024;
+          wContext.fillStyle = 'hsl(0, 100%, 50%)';
+          wContext.strokeStyle = "#000";
+          wContext.fillRect(i * barWidth, offset, 1, 1);
         }
+
 
 // let's try adding drawing to the waveform canvas!
       var waveformCanvas = document.getElementById('canvas1');
@@ -201,9 +355,11 @@ function downloadFile() {
       drawContext2.strokeStyle = 'rgba(0, 0, 0, 0.0)';
 
 // if selection is true, draw an opaque rectangle to highlight it
-if (showRect == true && startPoint != endPoint && startPoint != 0 && endPoint != lenFile) {
+if (showRect == true) { // && startPoint != endPoint && startPoint != 0 && endPoint != lenFile) {
   //console.log(startPoint + endPoint + "make a rectangel yo!");
-  drawContext2.fillStyle = 'rgba(255, 255, 0, .01)';
+  drawContext2.clearRect(0, 0, 870, 256);
+  wavesurfer.drawBuffer();
+  drawContext2.fillStyle = 'rgba(115,255,184, .5)';
   if (rectX2 > rectX) {
     drawContext2.fillRect(rectX, 0, rectX2-rectX, 256);
   } else {
@@ -214,6 +370,14 @@ if (showRect == true && startPoint != endPoint && startPoint != 0 && endPoint !=
 } else {
   drawContext2.clearRect(0, 0, 870, 256);
   wavesurfer.drawBuffer();
+//also draw line
+      //add a line across waveform
+      drawContext2.strokeStyle="#fff000";
+      drawContext2.moveTo(0, 128);
+      drawContext2.lineTo(804, 128);
+      drawContext2.stroke();
+      drawContext2.strokeStyle = 'rgba(0, 0, 0, 0.0)';
+
 }
 
 //addingtimestamp Top
@@ -237,12 +401,12 @@ if (showRect == true && startPoint != endPoint && startPoint != 0 && endPoint !=
 
 //      waveformCanvas.width = waveformCanvas.width;
       overlayctx.fillStyle="rgba(255,255,0,1)";
-      overlayctx.fillRect(0,0,805,30);
-      overlayctx.strokeStyle = "#00";
-      overlayctx.fillStyle = "#000";
+      overlayctx.clearRect(0,0,overlay.width,overlay.height);
       overlayctx.textAlign = "center";
+      overlayctx.fillRect(0,0,overlay.width,overlay.height);
+      overlayctx.strokeStyle = "#000";
+      overlayctx.fillStyle = "#000";
       overlayctx.font = "bold 12px Courier New"
-//      drawContext2.fillText(, 750, 20);
       if (!recording) {
       overlayctx.fillStyle="rgba(0,0,0,1)";
       overlayctx.moveTo(1, 0);
@@ -264,6 +428,17 @@ if (showRect == true && startPoint != endPoint && startPoint != 0 && endPoint !=
       overlayctx.moveTo(804, 0);
       overlayctx.lineTo(804, 5);
       overlayctx.fillText(1 * lenFile.toFixed(2), 790, 22);
+      //draw lines for markers
+/*      overlayctx.strokeStyle="rgba(0,255,0,1)";
+      overlayctx.moveTo(rectX, 30);
+      overlayctx.lineTo(rectX, 25);
+      overlayctx.strokeStyle="rgba(255,0,0,1)";
+      overlayctx.moveTo(rectX2, 25);
+      overlayctx.lineTo(rectX2, 30);
+*/      overlayctx.fillStyle="rgba(0,0,0,1)";
+      overlayctx.fillText((rectX / $("#canvas2").width() * lenFile).toFixed(2), rectX, 22);
+      overlayctx.fillText((rectX2 / $("#canvas2").width() * lenFile).toFixed(2), rectX2, 22);
+      drawContext2.strokeStyle = 'rgba(0, 0, 0, 0.0)';
 
 //      overlayctx.fillText(((300 - $("#canvas2").offset().left) / $("#canvas2").width() * lenFile).toFixed(2)), 300, 22);
 //      overlayctx.fillText("0", 300, 22);
@@ -306,16 +481,6 @@ if (showRect == true && startPoint != endPoint && startPoint != 0 && endPoint !=
       overlayTopctx.clearRect(0,0,805,30);
     }
 
-/* draw rect selection
-  drawCanvas2.fillStyle = "rgba(0, 0, 0, 0.1)";
-  if (rectX2 > rectX) {
-  rect =  drawCanvas2.fillRect(rectX2,0,rectX2 - rectX,400);
-} else {
-    rect =  drawCanvas2.fillRect(rectX2,0,rectX - rectX2,400);
-}
-wavesurfer.drawBuffer();
-  //console.log(rectX + ", " + rectX2);
-  */
     }
 
     setInterval(draw,1000/30); // 30 x per second
@@ -362,13 +527,18 @@ function mouseUpListener(event) {
             });
   rectX2 = event.pageX -  $("#canvas1").offset().left;
   markerR = ((event.pageX - $("#canvas2").offset().left) / $("#canvas2").width() * lenFile).toFixed(2);
+  // if (markerR < markerG) {
+  //   startPoint = markerR;
+  //   console.log(startPoint);
+  // } else {
+  //   startPoint = markerG;
+  //   console.log(startPoint);
+  // }
   window.removeEventListener("mouseup", mouseUpListener,false);
 }
 
 function mouseMoveListener(event) {
-  if (dragging) {
     showRect = true;
-  }
   console.log("MOVING");
   rectX2 = event.pageX - $("#canvas1").offset().left;
 }
@@ -455,11 +625,11 @@ function fileChange() {
   console.log("undo index is: " + undoIndex +" undoList is "+ undoList);
   //$('#filenom').text(currentFile);
   wavesurfer.load(currentFile);
- var filenomm = currentFile.slice(14,45);
-if (currentFile.length > 46) {
+ var filenomm = currentFile.slice(14,30);
+if (currentFile.length > 31) {
   filenomm = filenomm.concat("...");
 }
-$('#filenom').text(" ::  "+filenomm);
+$('#filenom').text(" "+filenomm);
 }
 
 function undo() {

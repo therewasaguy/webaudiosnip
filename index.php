@@ -39,6 +39,7 @@ include 'vars.php';
          <!--boostrap-->
         <script src="css/bootstrap.js"></script>
         <script src="js/bootstrap-slider.js"></script>
+
         <!-- DAT GUI 
         <script src="js/dat.gui.js"></script>
     -->
@@ -49,6 +50,8 @@ include 'vars.php';
          <script src="js/audiocont.js"></script>
         -->
         <script src="js/trivia.js"></script>
+                <script src="js/dropdown.js"></script>
+
     </head>
 
     <body itemscope itemtype="http://schema.org/WebApplication">
@@ -75,19 +78,11 @@ include 'vars.php';
                 
  
 
-                <div style="display:inline;width:300px;">
+                <div style="display:inline;width:300px;font-size:200%;">
                 <img src="img/audiotransformercooltext.png">
-                    Now Editing: <span id="filenom"><nobr></nobr></span>  <em>Drag 'n' drop a new<i class="glyphicon glyphicon-music"></i>  file below</em>
-            <button id="load-file" class="btn btn-sm">
-            <i class="glyphicon glyphicon-cloud-upload"></i>
-            Load File</button> 
-            <button class="btn btn-sm" onClick="downloadFile()" align="center" style="margin:auto;">
-                <i class="glyphicon glyphicon-download-alt"></i>
-                Download
-            </button>
-
+                    Now Editing:                 <span id="filenom"> </span> 
                 </div>
-            </div>
+
 
             <div id="demo">
 
@@ -98,6 +93,7 @@ include 'vars.php';
 
                 <div id="upload">
                     <div id="drop">
+<!--                                 <em><br />  Drag 'n' drop a new <i class="glyphicon glyphicon-music"></i>  file here!</em> -->
                     <canvas id="overlayTop" height="30px" width="804px" style="z-index: 0;"></canvas>
 <!--                <h4> Current File: <span id="filenom"><nobr></nobr></span>    <i class="glyphicon glyphicon-music"></i>   <em>Drag 'n' drop a new file here</em></h4>
                 <br />
@@ -111,169 +107,89 @@ include 'vars.php';
                 </div>
                     <canvas id="overlay" height="30px" width="804px" style="z-index: 0;"></canvas>
 
-                    </div>
-                </div>
+<div class="navbar navbar-inverse" style="text-align:center; padding:5px;">
 
-                <div class="controls" id="buttons">
-                    <!--
-                    <button class="btn btn-primary" data-action="back">
-                        <i class="glyphicon glyphicon-step-backward"></i>
-                        Backward
-                    </button>
--->
-                    <button class="btn btn-primary" data-action="play">
-                        <i class="glyphicon glyphicon-play"></i>
-                        /
-                        <i class="glyphicon glyphicon-pause"></i>
-                        (Spacebar)
-                    </button>
 
-                    <button class="btn btn-primary" data-action="toggle-loop" style="width:75px;">
-                        <span id="looped"><i class="glyphicon glyphicon-repeat"></i></span>
-                        Loop
-                    </button>
-<!--
-                    <button class="btn btn-primary" data-action="forth">
-                        <i class="glyphicon glyphicon-step-forward"></i>
-                        Forward
-                    </button>
 
-                    <button class="btn btn-primary" data-action="toggle-mute">
-                        <i class="glyphicon glyphicon-volume-off"></i>
-                        Toggle Mute
-                    </button>
--->
-<!--
-                    <div class="mark-controls">
-                        <button class="btn btn-success" data-action="green-mark">
-                            <i class="glyphicon glyphicon-flag"></i>
-                            Clear markers
-                        </button>
+    <button class="btn btn-success" data-action="play">
+        <i class="glyphicon glyphicon-play"></i>
+        /
+        <i class="glyphicon glyphicon-pause"></i>
+        (Spacebar)
+    </button>
 
-                        <button class="btn btn-danger" data-action="red-mark">
-                            <i class="glyphicon glyphicon-flag"></i>
-                            Set mark
-                        </button>
--->
-                        <button class="btn" data-action="rev">
-                            <i class="glyphicon glyphicon-retweet"></i>
-                            Reverse
-                        </button>
+    <button class="btn btn-success navbar-btn" data-action="toggle-loop" style="width:50px;">
+        <span id="looped"><i class="glyphicon glyphicon-repeat"></i></span>
+    </button>
 
-                        <button class="btn" data-action="speedUp">
-                            <i class="glyphicon glyphicon-arrow-up"></i>
-                            Speed Up
-                        </button>
+    <li class="dropdown" style="display:inline;">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+        Edit 
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+          <li><a tabindex="-1" href="#" id="undo"><i class="glyphicon glyphicon-thumbs-down"></i>
+            Undo (Z)</a></li>
+          <li><a tabindex="-1" href="#" id="redo"><i class="glyphicon glyphicon-thumbs-up"></i>
+            Redo (Y)</a></li>
+          <li class="divider"></li>
+          <li><a tabindex="-1" href="#" id="cut">Cut (x)</a></li>
+          <li><a tabindex="-1" href="#" id="copy">Copy (c)</a></li>
+          <li><a tabindex="-1" href="#" id="paste">Paste (v) </a></li>
+          <li class="divider"></li>
+          <li><a tabindex="-1" href="#" id="delete">Delete (del)</a></li>
+        </ul>
+    </li>
 
-                        <button class="btn" data-action="speedDn">
-                            <i class="glyphicon glyphicon-arrow-down"></i>
-                            Slow Down
-                        </button>
 
-                        <button class="btn" data-action="reverb">
-                            <i class="glyphicon glyphicon-tint"></i>
-                            Reverb
-                        </button>
 
-                        <button class="btn" onclick="undo()">
-                            <i class="glyphicon glyphicon-thumbs-down"></i>
-                            Undo
-                        </button>
+    <li class="dropdown" style="display:inline;">
+        <button type="button" class="btn btn-primary dropdown-toggle pull-center" data-toggle="dropdown">
+        Effects
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+          <li><a tabindex="-1" href="#" id="reverse"><i class="glyphicon glyphicon-retweet"></i> Backwards </a></li>
+          <li><a tabindex="-1" href="#" id="speedup" onclick="speedUp()"><i class="glyphicon glyphicon-arrow-up"></i> Speed Up</a></li>
+          <li><a tabindex="-1" href="#" id="slowdown" onclick="speedDn()"> <i class="glyphicon glyphicon-arrow-down"></i> Slow Down</a></li>
+          <li><a tabindex="-1" href="#" id="reverb" onclick="reverb()"><i class="glyphicon glyphicon-tint"></i> Reverb</a></li> 
 
-                        <button class="btn" onclick="redo()">
-                            <i class="glyphicon glyphicon-thumbs-up"></i>
-                            Redo
-                        </button>
+        <li class="divider"></li>
+          <li><a tabindex="-1" href="#" id="volUp">Turn Up</a></li>
+          <li><a tabindex="-1" href="#" id="volDn">Turn Down</a></li>
+        </ul>
+    </li>
+
+                 <button class="btn btn-default navbar-btn" onClick="downloadFile()" align="center" style="margin:auto;">
+                    <i class="glyphicon glyphicon-download-alt"></i> Download </button>
+                <button id="upload-file" class="btn btn-default navbar-btn">
+                    <i class="glyphicon glyphicon-upload"></i> Upload</button> 
+                <button id="browse-samples" class="btn btn-default navbar-btn">
+                    <i class="glyphicon glyphicon-cloud-upload"></i> Browse</button> 
+
+<hr />
+                    <canvas id="viz" style="background-color:#777;" height="100px" width="500px">
+                    </canvas>
+                    <canvas id="wViz" style="background-color:#777;" height="100px" width="250px">
+                    </canvas>
+</div>
 </div>
 
-<!--                        <button id="delete" disabled>Delete</button>-->
-                        <audio id="preview" ></audio>
-                        <div id="container" style="padding:1em 2em;"></div>
 
 
-<!-- Button trigger modal 
-                        <button class="btn" data-toggle="modal" data-target="#speedModal">
-                            <i class="glyphicon glyphicon-resize-vertical"></i>
-                          Change Speed
-                        </button>
-
-                        <!-- Modal -->
-                        <!--
-                        <div class="modal fade" id="speedModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                <h4 class="modal-title" id="myModalLabel">Change Speed</h4>
-                              </div>
-                              <div class="modal-body">
-<!--SLIDER: http://www.eyecon.ro/bootstrap-slider/ -->
-
-<!--
-            <script>$('.RC').slider()</script>
-            <style>  #RC .slider-selection {
-                                background: #FF8282;
-                              }
-                              #sl3 .slider-selection {
-                                background: red;
-                                }
-                    #sl3 .slider .slider-horizontal {
-                        width:300px;
-
-                    }
-
-  </style>
-               <div class="well">
-                <input type="text" value=".01" id="sl3" >
-              </div>
-
-                            </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Nevermind</button>
-                                <button type="button" class="btn btn-primary" id="speedGoButton">Go!</button>
-                                <script>
-                                // console.log("NOT A TEST")
-                                // $("#speedGoButton").click(setSpeed());
-                                $("#speedGoButton").click(
-                                    function(){
-                                        setSpeed();
-                                    }
-                                )
-                                </script>
-                              </div>
-                            </div>
-                        --><!-- /.modal-content -->
-                            <!--
-                          </div> /.modal-dialog -->
-                        <!-- </div>/.modal -->
-<!-- dropdown no worky-->
-<!--
-
-                        <div class="btn-group">
-                          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Effects <span class="caret"></span>
-                          </button>
-                          <ul class="dropdown-menu" role="menu">
-                            <li onclick="console.log('hey')"><a href="#">Change Speed</a></li>
-                            <li><button class="btn" data-action"rev">Reverse</button></li>
-                            <li><a href="#">Reverb</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">EQ</a></li>
-                          </ul>
-                        </div>
--->
-<!--                    
                     </div>
-                    -->
                 </div>
 
+<!--                <div class="controls" id="buttons">-->
 
 
+                        <audio id="preview" ></audio>
+                        <div id="container" style="padding:1em 2em;"></div>
             <div class="row marketing">
                 <div class="col-lg-6">
-                    <!--visualizations??-->
+                    <!--visualizations??
                     <canvas id="viz" style="background-color:#051315;">
-                    </canvas>
+                    </canvas>-->
                     <script>
 //                    console.log(WaveSurfer.getCurrentTime())
 /*                      var canvas = document.querySelector('canvas');
@@ -285,28 +201,8 @@ include 'vars.php';
                 </div>
             </div>
 
-<!--old upload placement
-                <div id="upload" style="display:inline;height:20px;">
-                    <div id="drop" style="width:870px;padding:5px;text-align:center;">
-                <h4> Current File: <span id="filenom"><nobr></nobr></span>    <i class="glyphicon glyphicon-music"></i>   <em>Drag 'n' drop a new file here</em></h4>
-                    </div>
-                </div>
--->
             <hr />
 
-<!-- olde download button
-            <div class="row">
-                <div class="downRow" style="height:70px;">
-                        <a href="#">
-                        <button class="btn" onClick="downloadFile()" align="center" style="margin:auto;">
-                            <i class="glyphicon glyphicon-download-alt"></i>
-                            Download File
-                        </button>
-                        </a<
-                </div>
-            </div>
-
--->
             <div class="footer row">
                 <div class="col-sm-12">
                     <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>

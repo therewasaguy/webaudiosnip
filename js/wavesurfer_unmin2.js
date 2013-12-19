@@ -219,8 +219,11 @@ var WaveSurfer = {
         if (this.drawer.clear(), this.drawer.progress(this.backend.getPlayedPercents()), this.redrawMarks(), this.params.fillParent && !this.params.scrollParent) var t = this.drawer.getWidth();
         else t = this.backend.getDuration() * this.params.minPxPerSec;
         var e = this.backend.getPeaks(t);
+        var prevLenFile = lenFile;
         lenFile = this.backend.getDuration();
-        endPoint = lenFile;
+        if (prevLenFile != lenFile) {
+            endPoint = lenFile;
+        }
         //console.log("end point is " + endPoint);
         this.drawer.drawPeaks(e, t)
     },
