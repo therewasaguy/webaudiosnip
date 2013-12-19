@@ -36,12 +36,9 @@ include 'vars.php';
                 // Create a name
                 $uploadfilename = /**time() . "_" . rand(1000,9999) . "_" . **/basename($_FILES['bytes']['name']);
                 
-                // Make sure apache can write to this folder
-                //$uploaddir = '/home/jasonsigal/itp.jasonsigal.cc/webaudiosnip/example/media';
-                $uploaddir = '/Applications/MAMP/htdocs/webaudiosnip/example/media';
                 $uploadfile = $uploaddir ."/". $uploadfilename;
 
-                //$uploadrelativefile = 'http://itp.jasonsigal.cc/webaudiosnip/example/media/' . $uploadfilename;
+//                $uploadrelativefile = 'http://jasonsigal.cc/webaudioeditor/example/media/' . $uploadfilename;
         
                 $uploadrelativefile = 'example/media/' . $uploadfilename;
                 if (move_uploaded_file($_FILES['bytes']['tmp_name'], $uploadfile))

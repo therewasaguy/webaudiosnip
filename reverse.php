@@ -19,40 +19,7 @@ if (isset($_POST['revers'])) {
 	$temp_file = $orig_file_name.time().$orig_file_ext;  //combine with timestamp
 	$output = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$temp_file." reverse");	
 
-	//mv oldname newname   rename current file to undo file so the name is $orig_file_name."_undo".$orig_file_ext
-	//echo($output."\n");
-	//exec("mv ".$ssh_dir."/".$current_file." ".$ssh_dir."/".$orig_file_name."_undo".$orig_file_ext);
-
-
-	//write old filename to text database of undo files
-	//return new file
-
-/*
-	//mv oldname newname   rename current file to undo file so the name is $orig_file_name."_undo".$orig_file_ext
-	//echo($output."\n");
-	exec("mv ".$ssh_dir."/".$current_file." ".$ssh_dir."/".$orig_file_name."_undo".$orig_file_ext);
-	echo($output."\n");
-	//rename temp file to current file
-	exec("mv ".$ssh_dir."/".$temp_file." ".$ssh_dir."/".$current_file);
-	//echo($output."\n");
-	$undo_file = $orig_file_name."_undo".$orig_file_ext;
-		/*
-		echo("The Current File is ".$ssh_dir."/".$current_file);
-		echo("\n");
-		echo("The Undo File is ".$ssh_dir."/".$undo_file);
-
-		echo($temp_file);
-		echo($ssh_dir."/".$current_file);
-		//echo($output);
-		*/
-//	echo("test1");
-//	echo( $ssh_dir_sm."".$current_file." ".$ssh_dir_sm."1111".$temp_file." reverse");
-//	echo(" current file: ".$current_file);
-//	echo(" temp file: ".$temp_file);
-//	echo("original file nom is ".$orig_file_name." ");
-//	echo("original file ext is ".$orig_file_ext);
 	echo($temp_file);
-//	echo($orig_file_ext);
 	}
 
 ?>

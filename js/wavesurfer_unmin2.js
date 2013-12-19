@@ -2,7 +2,18 @@
 
 "use strict";
 
+var lenFile;
+var timePos = 0.00;
+var playedPercent = 0;
+var startPoint = 0;
+var endPoint = 0;
+var fileString;
+var dragPos;
+var lastPos;
+var looped = true;
 
+//click onClick
+//seekTo
 
 var WaveSurfer = {
     defaultParams: {
@@ -61,16 +72,27 @@ var WaveSurfer = {
         this.backend.play(this.backend.getDuration() * t)
     },
     play: function () {
-        this.backend.play()
+        //this.backend.play()
+        this.playAt(startPoint);
     },
     pause: function () {
         this.backend.pause()
     },
     playPause: function () {
-        this.backend.isPaused() ? this.play() : this.pause()
+        this.backend.isPaused() ? this.playAt(startPoint) : this.pause()
     },
-   isLooping: function () {
-       console.log(this.backend.isLooping());
+    //toggle
+   toggleLooping: function () {
+        if (looped == true) {
+            looped = false;
+            $('#looped').hide();
+        } else {
+            looped = true;
+            $('#looped').show();
+        }
+        console.log(looped);
+        //return(looped);
+       //console.log(this.backend.isLooping());
        //console.log("hey");
    },
     skipBackward: function (t) {
@@ -89,7 +111,8 @@ var WaveSurfer = {
         this.playAt(t), e && this.pause(), this.fireEvent("seek", t)
     },
     stop: function () {
-        this.playAt(0), this.pause(), this.drawer.progress(0)
+        this.playAt(startPoint), this.pause(), this.drawer.progress(startPoint);
+        console.log("stopped");
     },
     setVolume: function (t) {
         this.backend.setVolume(t)
@@ -98,7 +121,11 @@ var WaveSurfer = {
         this.isMuted ? (this.backend.setVolume(this.savedVolume), this.isMuted = !1) : (this.savedVolume = this.backend.getVolume(), this.backend.setVolume(0), this.isMuted = !0)
     },
     mark: function (t) {
-        if (t.id && t.id in this.markers) return this.markers[t.id].update(t);
+        if (t.id && t.id in this.markers) {
+            this.markers[t.id].update(t);
+//            return this.markers[t.id].update(t);
+        }
+        console.log("Mark " + t.id);
         var e = this,
             i = WaveSurfer.util.extend({
                 id: WaveSurfer.util.getId(),
@@ -108,6 +135,10 @@ var WaveSurfer = {
             r = Object.create(WaveSurfer.Mark);
                    // console.log(i.position); --> this shows the real time!
 
+        console.log("position = ");
+        console.log(i.position);
+        // if pos1 exists && pos1 < pos2, startPos = pos1, endPos = pos2
+
         return r.on("update", function () {
             var t = e.backend.getDuration() || 1;
             null == r.position && (r.position = r.percentage * t), r.percentage = r.position / t, e.markers[r.id] = r, e.drawer.addMark(r)
@@ -115,10 +146,57 @@ var WaveSurfer = {
             e.drawer.removeMark(r), delete e.markers[r.id]
         }), this.fireEvent("marked", r), r.init(i)
 
-//        console.log(t);
-        console.log("position = ");
-        console.log(position);
+    },
+        dragMark: function (t) {
+            dragPos = (t.mTime / this.drawer.getWidth()); //* this.backend.getDuration();
+            //startPoint = dragPos;
+            //startPoint = dragPos;
+            if (t.id == 'stop') {
+                endPoint = dragPos;
+                console.log("the ID is stop");
+            }
+            else if (t.id == 'start') {
+                startPoint = dragPos;
+                if (startPoint < 0){
+                    startPoint = .01;
+                }
+             //   console.log("End Point");
+            }
+            if (startPoint > endPoint) {
+                var tempPoint = startPoint;
+                startPoint = endPoint;
+                endPoint = tempPoint;
+            }
+            if (Math.abs(startPoint - endPoint) < .0005) {
+                console.log('too short');
+                endPoint = lenFile;
+            }
+            this.seekTo(startPoint);//this.backend.getDuration());
+            console.log("start: "+ startPoint + " End: " + endPoint);
+        if (t.id && t.id in this.markers) {
+            this.markers[t.id].update(t);
+//            return this.markers[t.id].update(t);
+        }
 
+//        console.log("length of markers is " +this.markers[0].length);
+        var e = this,
+            i = WaveSurfer.util.extend({
+                id: WaveSurfer.util.getId(),
+                position: dragPos * this.backend.getDuration(),
+                width: this.params.markerWidth
+            }, t),
+            r = Object.create(WaveSurfer.Mark);
+                   // console.log(i.position); --> this shows the real time!
+
+        // if pos1 exists && pos1 < pos2, startPos = pos1, endPos = pos2
+
+        return r.on("update", function () {
+            var t = e.backend.getDuration() || 1;
+            null == r.position && (r.position = r.percentage * t), r.percentage = r.position / t, e.markers[r.id] = r, e.drawer.addMark(r)
+        }), r.on("remove", function () {
+            e.drawer.removeMark(r), delete e.markers[r.id]
+        }), this.fireEvent("marked", r), r.init(i)
+        lastPos = dragPos;
 
     },
     redrawMarks: function () {
@@ -141,6 +219,9 @@ var WaveSurfer = {
         if (this.drawer.clear(), this.drawer.progress(this.backend.getPlayedPercents()), this.redrawMarks(), this.params.fillParent && !this.params.scrollParent) var t = this.drawer.getWidth();
         else t = this.backend.getDuration() * this.params.minPxPerSec;
         var e = this.backend.getPeaks(t);
+        lenFile = this.backend.getDuration();
+        endPoint = lenFile;
+        //console.log("end point is " + endPoint);
         this.drawer.drawPeaks(e, t)
     },
     loadBuffer: function (t) {
@@ -153,10 +234,17 @@ var WaveSurfer = {
     },
     onProgress: function (t) {
         if (t.lengthComputable) var e = t.loaded / t.total;
-        else e = t.loaded / (t.loaded + 1e6);
+        else {
+            e = t.loaded / (t.loaded + 1e6);
+          }
         this.fireEvent("loading", Math.round(100 * e), t.target)
+        console.log(e);
+        if (e = 1) {
+            reviveButtons();    //bring back the buttons
+        }
     },
     load: function (t) {
+        //put filename in title screen
         var e = this,
             i = new XMLHttpRequest;
         i.open("GET", t, !0), i.send(), i.responseType = "arraybuffer", i.addEventListener("progress", function (t) {
@@ -335,23 +423,11 @@ WaveSurfer.Mark = {
         return this.buffer ? this.buffer.duration : 0
     },
     play: function (t, e) {
-        this.refreshBufferSource(), null == t && (t = this.getCurrentTime()), null == e && (e = this.getDuration()), t > e && (t = 0), this.lastStart = t, this.startTime = this.ac.currentTime, this.paused = !1, this.scheduledPause = e, this.source.start ? this.source.start(0, t, e - t) : this.source.noteGrainOn(0, t, e - t), this.fireEvent("play")
+        console.log('e is '+ e);
+        this.refreshBufferSource(), null == t && (t = this.getCurrentTime()), null == e && (e = this.getDuration()), t > e && (t = 0), this.lastStart = t, this.startTime = this.ac.currentTime, this.paused = !1, this.scheduledPause = e, this.source.start ? this.source.start(startPoint, t, e - t) : this.source.noteGrainOn(startPoint, t, e - t), this.fireEvent("play")
     },
     pause: function () {
         this.lastPause = this.lastStart + (this.ac.currentTime - this.startTime), this.paused = !0, this.source && (this.source.stop ? this.source.stop(0) : this.source.noteOff(0), this.clearSource()), this.fireEvent("pause")
-    },
-    isLooping: function() {
-//        looping = "hey loop sux",
-        if (this.source.loop = true)
-            {
-            this.source.loop = false;
-            console.log("false");
-            }
-        else
-            {
-            this.source.loop = true;
-            console.log("troo");
-            }
     },
     getPeaks: function (t, e) {
         var i = this.buffer,
@@ -368,6 +444,24 @@ WaveSurfer.Mark = {
         return a
     },
     getPlayedPercents: function () {
+        timePos = this.isPaused() ? this.lastPause : this.lastStart + (this.ac.currentTime - this.startTime);
+        //console.log("Current Time is " + timePos + "and the end point is " +endPoint * this.getDuration());
+        if (timePos > endPoint * this.getDuration()) {
+            if (looped == false) {
+            } else {
+                if (!this.isPaused()) {
+                    wavesurfer.seekTo(startPoint);
+                                    console.log("loop time!");
+/*                    if (endPoint > startPoint) {
+                        startPoint = endPoint;
+                    }
+                    else if (startPoint < endPoint) {
+                    wavesurfer.seekTo(startPoint);
+                }
+                */
+                }
+            }
+        }
         var t = this.getDuration();
         return t > 0 ? this.getCurrentTime() / t : 0
     },
@@ -408,11 +502,12 @@ WaveSurfer.Mark = {
             overflowY: "hidden"
         });
         var t = this;
-        this.wrapper.addEventListener("click", function (e) {
+/*        this.wrapper.addEventListener("click", function (e) {
             e.preventDefault();
             var i = "offsetX" in e ? e.offsetX : e.layerX;
             t.fireEvent("click", i / t.scrollWidth || 0)
-        })
+
+        })*/
     },
     clear: function () {
         this.resetScroll(), this.clearWave()
@@ -519,19 +614,13 @@ WaveSurfer.Mark = {
     updateProgress: function (t) {
         var e = Math.round(this.width * t) / this.pixelRatio;
         this.progressWave.style.width = e + "px",
-        console.log(t);
+        playedPercent = e;
         //        console.log(this.backend.getCurrentTime());   WHY DONT THIS WORK?
-        console.log("update progress");
+//        console.log("update progress");
         //put this into a separate function
         //send to a separate PHP page that parses and then returns
         var params = {cursor: t};
 
-        $.post("test.php", params).done(function( returnedData ) {
-            console.log(returnedData.cursor);
-            //console.log(returnedData.ms);
-            console.log(returnedData);
-        }, "json");
-        //ajax ?
     },
     addMark: function (t) {
         var e = t.id in this.marks;

@@ -39,8 +39,9 @@ include 'vars.php';
          <!--boostrap-->
         <script src="css/bootstrap.js"></script>
         <script src="js/bootstrap-slider.js"></script>
-        <!-- DAT GUI -->
+        <!-- DAT GUI 
         <script src="js/dat.gui.js"></script>
+    -->
         <!-- Main JS Stuff -->
         <script src="js/main.js"></script>
 
@@ -51,7 +52,15 @@ include 'vars.php';
     </head>
 
     <body itemscope itemtype="http://schema.org/WebApplication">
+
+
         <div class="container">
+       <div id="transport">
+            <!--RECORD STUFF-->
+            <button id="record" class="btn btn-danger">Record</button> 
+            <button id="stop" class="btn btn-warning" disabled>Stop</button> 
+            <br /> <br />
+        </div>
             <div class="header">
                 <noindex>
                 <ul class="nav nav-pills pull-right">
@@ -63,10 +72,36 @@ include 'vars.php';
                 </ul>
                 </noindex>
 
-                <h1 itemprop="name">Audio Transformer</h1>
+                
+ 
+
+                <div style="display:inline;width:300px;">
+                <img src="img/audiotransformercooltext.png">
+                    Now Editing: <span id="filenom"><nobr></nobr></span>  <em>Drag 'n' drop a new<i class="glyphicon glyphicon-music"></i>  file below</em>
+            <button id="load-file" class="btn btn-sm">
+            <i class="glyphicon glyphicon-cloud-upload"></i>
+            Load File</button> 
+            <button class="btn btn-sm" onClick="downloadFile()" align="center" style="margin:auto;">
+                <i class="glyphicon glyphicon-download-alt"></i>
+                Download
+            </button>
+
+                </div>
             </div>
 
             <div id="demo">
+
+
+<!--drag and drop file! -->
+
+
+
+                <div id="upload">
+                    <div id="drop">
+                    <canvas id="overlayTop" height="30px" width="804px" style="z-index: 0;"></canvas>
+<!--                <h4> Current File: <span id="filenom"><nobr></nobr></span>    <i class="glyphicon glyphicon-music"></i>   <em>Drag 'n' drop a new file here</em></h4>
+                <br />
+            -->
                 <div id="waveform">
                     <div class="progress progress-striped active" id="progress-bar">
                         <div class="progress-bar progress-bar-info"></div>
@@ -74,9 +109,12 @@ include 'vars.php';
 
                     <!-- Here be the waveform -->
                 </div>
+                    <canvas id="overlay" height="30px" width="804px" style="z-index: 0;"></canvas>
 
+                    </div>
+                </div>
 
-                <div class="controls">
+                <div class="controls" id="buttons">
                     <!--
                     <button class="btn btn-primary" data-action="back">
                         <i class="glyphicon glyphicon-step-backward"></i>
@@ -85,14 +123,13 @@ include 'vars.php';
 -->
                     <button class="btn btn-primary" data-action="play">
                         <i class="glyphicon glyphicon-play"></i>
-                        Play
                         /
                         <i class="glyphicon glyphicon-pause"></i>
-                        Pause
+                        (Spacebar)
                     </button>
 
-                    <button class="btn btn-primary" data-action="toggle-loop">
-                        <i class="glyphicon glyphicon-repeat"></i>
+                    <button class="btn btn-primary" data-action="toggle-loop" style="width:75px;">
+                        <span id="looped"><i class="glyphicon glyphicon-repeat"></i></span>
                         Loop
                     </button>
 <!--
@@ -106,17 +143,18 @@ include 'vars.php';
                         Toggle Mute
                     </button>
 -->
+<!--
                     <div class="mark-controls">
                         <button class="btn btn-success" data-action="green-mark">
                             <i class="glyphicon glyphicon-flag"></i>
-                            Set mark
+                            Clear markers
                         </button>
 
                         <button class="btn btn-danger" data-action="red-mark">
                             <i class="glyphicon glyphicon-flag"></i>
                             Set mark
                         </button>
-
+-->
                         <button class="btn" data-action="rev">
                             <i class="glyphicon glyphicon-retweet"></i>
                             Reverse
@@ -146,14 +184,21 @@ include 'vars.php';
                             <i class="glyphicon glyphicon-thumbs-up"></i>
                             Redo
                         </button>
+</div>
 
-<!-- Button trigger modal -->
+<!--                        <button id="delete" disabled>Delete</button>-->
+                        <audio id="preview" ></audio>
+                        <div id="container" style="padding:1em 2em;"></div>
+
+
+<!-- Button trigger modal 
                         <button class="btn" data-toggle="modal" data-target="#speedModal">
                             <i class="glyphicon glyphicon-resize-vertical"></i>
                           Change Speed
                         </button>
 
                         <!-- Modal -->
+                        <!--
                         <div class="modal fade" id="speedModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                           <div class="modal-dialog">
                             <div class="modal-content">
@@ -163,6 +208,8 @@ include 'vars.php';
                               </div>
                               <div class="modal-body">
 <!--SLIDER: http://www.eyecon.ro/bootstrap-slider/ -->
+
+<!--
             <script>$('.RC').slider()</script>
             <style>  #RC .slider-selection {
                                 background: #FF8282;
@@ -194,10 +241,13 @@ include 'vars.php';
                                 )
                                 </script>
                               </div>
-                            </div><!-- /.modal-content -->
-                          </div><!-- /.modal-dialog -->
-                        </div><!-- /.modal -->
+                            </div>
+                        --><!-- /.modal-content -->
+                            <!--
+                          </div> /.modal-dialog -->
+                        <!-- </div>/.modal -->
 <!-- dropdown no worky-->
+<!--
 
                         <div class="btn-group">
                           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -211,19 +261,18 @@ include 'vars.php';
                             <li><a href="#">EQ</a></li>
                           </ul>
                         </div>
-<!--                    -->
+-->
+<!--                    
                     </div>
+                    -->
                 </div>
-<!-- Single button -->
-
-
 
 
 
             <div class="row marketing">
                 <div class="col-lg-6">
                     <!--visualizations??-->
-                    <canvas id="viz" style="background-color:#000;">
+                    <canvas id="viz" style="background-color:#051315;">
                     </canvas>
                     <script>
 //                    console.log(WaveSurfer.getCurrentTime())
@@ -236,24 +285,18 @@ include 'vars.php';
                 </div>
             </div>
 
-<!--drag and drop file! -->
-
-        <div id="upload">
-
-                <p class="lead pull-center" id="drop">
-                    Drag'n'drop your favorite
-                    <i class="glyphicon glyphicon-music"></i>-file
-                    here!
-
-                </p>
-        </div>
-
-
-
+<!--old upload placement
+                <div id="upload" style="display:inline;height:20px;">
+                    <div id="drop" style="width:870px;padding:5px;text-align:center;">
+                <h4> Current File: <span id="filenom"><nobr></nobr></span>    <i class="glyphicon glyphicon-music"></i>   <em>Drag 'n' drop a new file here</em></h4>
+                    </div>
+                </div>
+-->
             <hr />
 
+<!-- olde download button
             <div class="row">
-                <div class="downRow">
+                <div class="downRow" style="height:70px;">
                         <a href="#">
                         <button class="btn" onClick="downloadFile()" align="center" style="margin:auto;">
                             <i class="glyphicon glyphicon-download-alt"></i>
@@ -263,6 +306,7 @@ include 'vars.php';
                 </div>
             </div>
 
+-->
             <div class="footer row">
                 <div class="col-sm-12">
                     <a rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by/3.0/80x15.png" /></a>
@@ -292,7 +336,13 @@ include 'vars.php';
 
 <script src="js/visualizer-sample.js"></script>
 
+         <!--RecordRTC stuff-->
+          <script src="js/RecordRTC.js"></script>
+          <script src="js/recordxhr.js"></script>  
+
 <script>
+
+
         $(function(){
 
         $('#sl1').slider({

@@ -1,3 +1,7 @@
+body {
+	background-color:#444;
+	color:#5A8790;
+}
 button {
 /*	color: orange;*/
 }
@@ -19,4 +23,19 @@ element {
   position: relative;
   width:100px;
   margin:auto !important;
+}
+
+#drop {
+  background-color:#111;
+}
+
+#waveform {
+  background-color:#000;  
+}
+
+#overlay {
+/*  background-color:#fff000;*/
+}
+
+.container {
 }

@@ -9,17 +9,22 @@ This will include all of my variables, be sure to include vars.php in all files!
 
 
 
-//make an array of all files in audio directory, and the first is our current file
 $dir    = 'example/media';
-//$ssh_dir = '/home/jasonsigal/itp.jasonsigal.cc/webaudiosnip/example/media';
-$ssh_dir = '/Applications/MAMP/htdocs/webaudiosnip/';
-//$ssh_dir_sm = '/Applications/MAMP/htdocs/webaudiosnip/';
-//$ssh_dir_longorig = '/Applications/MAMP/htdocs/webaudiosnip/example/media';
-
-
 $files_list = scandir($dir);
+
+/*variables for LOCAL */
 $sox = '/usr/local/bin/sox ';
-///  $sox = 'home/jasonsigal/soxtest/bin/sox'
+$uploaddir = '/Applications/MAMP/htdocs/audiotransformer/example/media';
+$ssh_dir = '/Applications/MAMP/htdocs/audiotransformer/';
+$uploaddir = '/Applications/MAMP/htdocs/audiotransformer/example/media';
+
+
+/*variables for HOSTED*/
+//                $uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
+// $sox = '/home/jasonsigal/soxtest/bin/sox';
+//$uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
+//$ssh_dir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/';
+
 
 // function to reset the files list
 function resetFiles($flist) {
@@ -43,6 +48,9 @@ $old_file; // = null;
 $orig_file_name; // = null;
 $orig_file_ext; // = null;
 $undo_file; // = null;
+
+$undoIndex;
+$undoList;
 
 //print_r($files_list);
 //echo("hey");

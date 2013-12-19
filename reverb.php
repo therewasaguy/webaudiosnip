@@ -17,8 +17,11 @@ if (isset($_POST['reverb'])) {
 	//$orig_file_name = substr($orig_file_name, 4, strlen($orig_file_name));	//chop off those spaces at the beginning of file name
 	$orig_file_ext = substr($current_file,strlen($current_file)-4,4);  //extract original extension
 
-	$temp_file = $orig_file_name.time().$orig_file_ext;  //combine with timestamp
-	$output = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$temp_file." pad 0 1 reverb");	
+	$temp_fileA = $orig_file_name.time().$orig_file_ext;  //combine with timestamp
+	$output1 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$temp_fileA." gain −3");	
+	$temp_file = $orig_file_name.time()."1".$orig_file_ext;  //combine with timestamp
+	$output = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$temp_file." pad 0 .3 reverb");	
+
 
 
 	echo($temp_file);
