@@ -118,7 +118,7 @@ include 'vars.php';
         (Spacebar)
     </button>
 
-    <button class="btn btn-success navbar-btn" data-action="toggle-loop" style="width:50px;">
+    <button class="btn btn-success navbar-btn" data-action="toggle-loop">
         <span id="looped"> Loop Mode <i class="glyphicon glyphicon-repeat"></i></span>
     </button>
 

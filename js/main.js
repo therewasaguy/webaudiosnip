@@ -240,6 +240,8 @@ jQuery("#cut").click(function(e){
                 }, error : function(request,error) {
                   console.log(request);
                   console.log(error);
+                  reviveButtons();
+
                 }
               })
             } else {
@@ -248,6 +250,124 @@ jQuery("#cut").click(function(e){
             }
 });
 
+
+jQuery("#paste").click(function(e){
+    greyButtons();
+      if (pasteFile != null) {
+            var uploadFormData = new FormData();
+            uploadFormData.append("paste", true);
+            uploadFormData.append("currentFile", currentFile);
+            uploadFormData.append("ePoint", startPoint*lenFile);
+            uploadFormData.append("fileLen", lenFile);
+            uploadFormData.append("pasteFile", pasteFile);
+            console.log("paste file: "+pasteFile+" ePoint: "+startPoint*lenFile+" fileLen: "+lenFile);
+
+              $.ajax({
+                url : escape("paste.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         console.log("new file is " + ret.newFile);
+                         currentFile = $.trim(ret.newFile);
+//                         pasteFile = $.trim(ret.pasteFile);
+//                         console.log("paste file: " + pasteFile);
+                         fileChange();
+                         reviveButtons();
+
+                }, error : function(request,error) {
+                  console.log(request);
+                  console.log(error);
+                   reviveButtons();
+
+                }
+              })
+            } else {
+              alert("Nothing to paste!");
+              reviveButtons();
+            }
+});
+
+jQuery("#copy").click(function(e){
+    greyButtons();
+      if (showRect == true) {
+            var uploadFormData = new FormData();
+            uploadFormData.append("copy", true);
+            uploadFormData.append("currentFile", currentFile);
+            uploadFormData.append("eStart", startPoint*lenFile);
+            uploadFormData.append("eStop", endPoint*lenFile);
+
+              $.ajax({
+                url : escape("copy.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                     //    console.log("new file is " + ret.newFile);
+                       //  currentFile = $.trim(ret.newFile);
+                         pasteFile = $.trim(ret.pasteFile);
+                         console.log("paste file: " + pasteFile);
+//                         fileChange();
+                         reviveButtons();
+
+                }, error : function(request,error) {
+                  console.log(request);
+                  console.log(error);
+                   reviveButtons();
+
+                }
+              })
+            } else {
+              alert("Drag to select some audio to copy!");
+              reviveButtons();
+            }
+});
+
+
+jQuery("#delete").click(function(e){
+    greyButtons();
+      if (showRect == true) {
+            var uploadFormData = new FormData();
+            uploadFormData.append("delete", true);
+            uploadFormData.append("currentFile", currentFile);
+            uploadFormData.append("eStart", startPoint*lenFile);
+            uploadFormData.append("eStop", endPoint*lenFile);
+            uploadFormData.append("fileLen", lenFile);
+
+              $.ajax({
+                url : escape("delete.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         console.log("new file is " + ret.newFile);
+                         currentFile = $.trim(ret.newFile);
+//                         pasteFile = $.trim(ret.pasteFile);
+//                         console.log("paste file: " + pasteFile);
+                         fileChange();
+                         reviveButtons();
+
+                }, error : function(request,error) {
+                  console.log(request);
+                  console.log(error);
+                   reviveButtons();
+
+                }
+              })
+            } else {
+              alert("Nothing to delete!");
+              reviveButtons();
+            }
+});
 
 /********************    //frequency analysis stuff   *************/
 

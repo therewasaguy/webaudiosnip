@@ -2,13 +2,13 @@
 
 include 'vars.php';
 
-if (isset($_POST['cut'])) {
+if (isset($_POST['copy'])) {
 	
 	//reset current file to the incoming file
 	$current_file = trim($_POST['currentFile']); 
 	$edit_start = trim($_POST['eStart']); //start edit
 	$edit_stop = trim($_POST['eStop']); //stop edit
-	$file_len = trim($_POST['fileLen']); //file Length
+//	$file_len = trim($_POST['fileLen']); //file Length
 
 	if ($edit_start <= 0) {
 		$edit_start = 0.01;
@@ -30,14 +30,14 @@ if (isset($_POST['cut'])) {
 	$new_file = $orig_file_name.time().$orig_file_ext;  //combine with timestamp
 
 
-	$output1 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$preSnip." trim 0 ".$edit_start);	
+//	$output1 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$preSnip." trim 0 ".$edit_start);	
 	$output2 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$copied." trim ".$edit_start." ".$edit_stop);	
-	$output3 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$postSnip." trim ".$edit_stop." ".$file_len);	
-	$output4 = exec($sox." ".$ssh_dir.$preSnip." ".$ssh_dir.$postSnip." ".$ssh_dir.$new_file." splice ".$edit_start);	
+//	$output3 = exec($sox." ".$ssh_dir.$current_file." ".$ssh_dir.$postSnip." trim ".$edit_stop." ".$file_len);	
+//	$output4 = exec($sox." ".$ssh_dir.$preSnip." ".$ssh_dir.$postSnip." ".$ssh_dir.$new_file." splice ".$edit_start);	
 
 //make a json object with newfile and copied file
 	header('Content-Type: application/json');
-	echo json_encode(array('newFile' => $new_file, 'pasteFile' => $copied));
+	echo json_encode(array('pasteFile' => $copied));
 
 
 //	echo($new_file);
