@@ -26,6 +26,7 @@ var rectX2;
 var drawCanvas2;
 var rect;
 var showRect;
+var pasteFile;
 
 // Init & load audio file
 $(document).ready(function() {
@@ -196,6 +197,57 @@ jQuery("#redo").click(function(e){
 
       redo();
   });
+
+
+// COPY PASTE CUT DELETE //
+jQuery("#cut").click(function(e){
+            console.log("cut");
+            greyButtons();
+
+      if (showRect == true) {
+            //0. prepare the infos
+            var uploadFormData = new FormData();
+            //console.log(droppedFiles);
+            console.log(currentFile);
+
+            console.log("Start: " + startPoint*lenFile);
+            console.log("EndL " + endPoint*lenFile);
+            console.log(lenFile);
+            uploadFormData.append("cut", true);
+            uploadFormData.append("currentFile", currentFile);
+            uploadFormData.append("eStart", startPoint*lenFile);
+            uploadFormData.append("eStop", endPoint*lenFile);
+            uploadFormData.append("fileLen", lenFile);
+
+
+            // 1. tell PHP to reverse the current file
+              $.ajax({
+                url : escape("cut.php"), // use your target
+                type : "POST",
+                data : uploadFormData,
+                cache : false,
+                contentType : false,
+                processData : false,
+                success : function(ret) {
+                         // callback function
+                         //console.log(ret);
+                         currentFile = $.trim(ret.newFile);
+                         pasteFile = $.trim(ret.pasteFile);
+                         console.log("paste file: " + pasteFile);
+                         fileChange();
+                         reviveButtons();
+
+                }, error : function(request,error) {
+                  console.log(request);
+                  console.log(error);
+                }
+              })
+            } else {
+              alert("Drag to select some audio to cut!");
+              reviveButtons();
+            }
+});
+
 
 /********************    //frequency analysis stuff   *************/
 
@@ -607,12 +659,12 @@ wavesurfer.on('ready', function () {
 //show and hide buttons
 
 function greyButtons() {
-  var controls = document.getElementById('buttons');
+  var controls = document.getElementById('controlbar');
   controls.style.display = "none";
 }
 
 function reviveButtons() {
-  var controls = document.getElementById('buttons');
+  var controls = document.getElementById('controlbar');
   controls.style.display = "block";
 }
 

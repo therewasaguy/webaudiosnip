@@ -107,7 +107,7 @@ include 'vars.php';
                 </div>
                     <canvas id="overlay" height="30px" width="804px" style="z-index: 0;"></canvas>
 
-<div class="navbar navbar-inverse" style="text-align:center; padding:5px;">
+<div id="controlbar" class="navbar navbar-inverse" style="text-align:center; padding:5px;">
 
 
 
@@ -119,7 +119,7 @@ include 'vars.php';
     </button>
 
     <button class="btn btn-success navbar-btn" data-action="toggle-loop" style="width:50px;">
-        <span id="looped"><i class="glyphicon glyphicon-repeat"></i></span>
+        <span id="looped"> Loop Mode <i class="glyphicon glyphicon-repeat"></i></span>
     </button>
 
     <li class="dropdown" style="display:inline;">
