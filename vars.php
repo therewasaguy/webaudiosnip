@@ -18,13 +18,12 @@ $uploaddir = '/Applications/MAMP/htdocs/audiotransformer/example/media';
 $ssh_dir = '/Applications/MAMP/htdocs/audiotransformer/';
 $uploaddir = '/Applications/MAMP/htdocs/audiotransformer/example/media';
 
-
-/*variables for HOSTED*/
-//                $uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
-// $sox = '/home/jasonsigal/soxtest/bin/sox';
-//$uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
-//$ssh_dir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/';
-
+/*variables for HOSTED
+                $uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
+$sox = '/home/jasonsigal/soxtest/bin/sox';
+$uploaddir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/example/media';
+$ssh_dir = '/home/jasonsigal/jasonsigal.cc/webaudioeditor/';
+*/
 
 // function to reset the files list
 function resetFiles($flist) {

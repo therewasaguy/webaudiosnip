@@ -17,7 +17,7 @@ include 'vars.php';
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Audio Transformer</title>
+        <title>Audio Transformer (Alpha) </title>
 
         <link href="data:image/gif;" rel="icon" type="image/x-icon" />
 
@@ -118,8 +118,8 @@ include 'vars.php';
         (Spacebar)
     </button>
 
-    <button class="btn btn-success navbar-btn" data-action="toggle-loop">
-        <span id="looped"> Loop Mode <i class="glyphicon glyphicon-repeat"></i></span>
+    <button class="btn btn-success navbar-btn" data-action="toggle-loop" style="width:120px;">
+        Loop Mode <span id="looped"> <i class="glyphicon glyphicon-repeat"></i></span>
     </button>
 
     <li class="dropdown" style="display:inline;">
@@ -185,8 +185,6 @@ include 'vars.php';
 
                         <audio id="preview" ></audio>
                         <div id="container" style="padding:1em 2em;"></div>
-            <div class="row marketing">
-                <div class="col-lg-6">
                     <!--visualizations??
                     <canvas id="viz" style="background-color:#051315;">
                     </canvas>-->
@@ -198,10 +196,6 @@ include 'vars.php';
                       canvas.height = 360;
 */
                     </script>
-                </div>
-            </div>
-
-            <hr />
 
             <div class="footer row">
                 <div class="col-sm-12">
@@ -209,13 +203,14 @@ include 'vars.php';
                 </div>
 
                 <div class="col-sm-7">
-                    Built by me using <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">wavesurfer.js</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/katspaugh/wavesurfer.js" property="cc:attributionName" rel="cc:attributionURL">katspaugh</a> which is licensed under a&nbsp;<a style="white-space: nowrap" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported License</a>.
+                    Built by <a href="http://jasonsigal.cc">Jason Sigal</a> using <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">wavesurfer.js</span> by <a xmlns:cc="http://creativecommons.org/ns#" href="https://github.com/katspaugh/wavesurfer.js" property="cc:attributionName" rel="cc:attributionURL">katspaugh</a> which is licensed under a&nbsp;<a style="white-space: nowrap" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US">Creative Commons Attribution 3.0 Unported License</a>.
                 </div>
 
                 <div class="col-sm-5">
                     <div class="pull-right">
                         <noindex>
-                        Demo music track is <a href="http://freemusicarchive.org/music/Thick_Business/Smoothest_Runes/Smoothest_Runes" rel="nofollow"><b>Smoothest Runes</b> <span class="muted">by</span>&nbsp;<b>Thick Business</b></a>. Thanks!
+                        This is a demo, lots more to go, find me on <a href="https://github.com/therewasaguy/webaudiosnip">github</a> and email jason "dot" sigal "at" gmail if you'd like info about the official launch!
+                        <!--Demo music track is <a href="http://freemusicarchive.org/music/Thick_Business/Smoothest_Runes/Smoothest_Runes" rel="nofollow"><b>Smoothest Runes</b> <span class="muted">by</span>&nbsp;<b>Thick Business</b></a>. Thanks!-->
                         </noindex>
                     </div>
                 </div>
